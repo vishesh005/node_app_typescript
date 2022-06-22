@@ -25,6 +25,10 @@ export class Auth_app implements App{
         }
     }
 
+    addMiddleware(middleware: any){
+       this.expressApp.use(middleware);
+    }
+
     stopServer() {
          this.expressApp.close()
     }

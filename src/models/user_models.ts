@@ -14,7 +14,7 @@ export class Register_user {
         this.password = password;
     }
 
-    copyWith(name?: string, age?: number, email?: string, phone_no?: number, password?: string): Register_user {
+    copyWith({name = undefined, age  = undefined, email  = undefined, phone_no  = undefined, password = undefined}): Register_user {
         return new Register_user(
             name == undefined ? this.name : name,
             age == undefined ? this.age : age,
@@ -25,6 +25,7 @@ export class Register_user {
     }
 
    static fromResponse(response: any): Register_user{
+       if(response == undefined) return undefined;
        return new Register_user(
             response.name,
             response.age,
@@ -61,6 +62,7 @@ export class User {
     }
 
     static fromResponse(response: any): User{
+        if(response == undefined) return undefined;
         return new User(
             response.name,
             response.age,
@@ -94,6 +96,7 @@ export class UserWithAuth {
     }
 
     static fromResponse(response: any): UserWithAuth {
+        if(response == undefined) return undefined;
         return new UserWithAuth(
             response.email,
             response.name,

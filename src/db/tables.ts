@@ -11,7 +11,7 @@ export class UserTable {
    static readonly column_password = "password";
 
    static get createQuery() {
-      return `CREATE TABLE ${UserTable.tableName} (`+
+      return `CREATE TABLE IF NOT EXISTS ${UserTable.tableName} (`+
           `${UserTable.column_email} TEXT PRIMARY KEY, `+
           `${UserTable.column_name} TEXT, `+
           `${UserTable.column_age} INTEGER, `+
@@ -32,11 +32,11 @@ export class UserAuthTable {
 
 
    static get createQuery() {
-      return `CREATE TABLE ${UserAuthTable.tableName} (`+
+      return `CREATE TABLE IF NOT EXISTS ${UserAuthTable.tableName} (`+
           `${UserAuthTable.column_email} TEXT PRIMARY KEY, `+
           `${UserAuthTable.column_name} TEXT, `+
           `${UserAuthTable.column_token} INTEGER, `+
-          `FOREIGN KEY (${UserAuthTable.column_email} `+
+          `FOREIGN KEY (${UserAuthTable.column_email}) `+
           `REFERENCES ${UserTable.tableName} (${UserTable.column_email}))`;
    }
 

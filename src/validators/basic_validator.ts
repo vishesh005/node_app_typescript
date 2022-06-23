@@ -55,3 +55,16 @@ export const validatePhoneNo = function (phone_no ,required: boolean) {
 }
 
 
+export const validateAuthToken = (token: string) : any => {
+    if(token == undefined ||
+      !token.includes("Bearer") ||
+      token.replace("Bearer","").length < 32){
+        return [{validation: "Invalid Request", message: "Invalid requested user access token"}]
+    }
+    else{
+        return undefined;
+    }
+}
+
+
+

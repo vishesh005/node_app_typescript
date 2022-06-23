@@ -15,6 +15,7 @@ export interface User_dao {
 
     createUserSession(userWithAuth: UserWithAuth) : Promise<any>
 
+    findUserAuthenticationSession(email:string) : Promise<UserWithAuth>
 }
 
 
@@ -23,10 +24,11 @@ export class User_dao_impl implements  User_dao {
     constructor(private readonly db: RelationalDatabase) {}
 
 
+
+
     async findUserByEmail(email: string): Promise<User> {
         await this.db.openDb();
-        const response = await this.db
-            .executeQuery(`SELECT * from ${UserTable.tableName} where ${UserTable.column_email}="${email}"`);
+        const response = await this.db.getRecord(UserTable.tableName,UserTable.column_email,email);
         const user = User.fromResponse(response);
         await this.db.closeDb();
         return user;
@@ -69,5 +71,13 @@ export class User_dao_impl implements  User_dao {
             `("${userWithAuth.email}", "${userWithAuth.name}", "${userWithAuth.authToken}")`)
         await this.db.closeDb();
         return  rowAffected;
+    }
+
+    async findUserAuthenticationSession(email: string): Promise<UserWithAuth> {
+        await this.db.openDb();
+        const response = await this.db.getRecord(UserAuthTable.tableName,UserTable.column_email,email);
+        const userWithAuth = UserWithAuth.fromResponse(response);
+        await this.db.closeDb();
+        return userWithAuth;
     }
 }

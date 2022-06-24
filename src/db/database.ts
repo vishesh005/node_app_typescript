@@ -1,7 +1,7 @@
 import {Database, open} from "sqlite";
 import * as sqlite3 from 'sqlite3';
 import * as fs from 'fs';
-import {UserAuthTable, UserTable} from "./tables";
+import {NotesTable, UserAuthTable, UserTable} from "./tables";
 
 
 const dbUri = "./notes_app.db";
@@ -75,6 +75,7 @@ class SqliteDatabase extends RelationalDatabase {
     private async _createTables(db: Database) {
        await db.exec(UserTable.createQuery);
        await db.exec(UserAuthTable.createQuery);
+       await db.exec(NotesTable.createQuery);
     }
 
     private async _migrateTables(db: Database) {

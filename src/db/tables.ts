@@ -43,4 +43,34 @@ export class UserAuthTable {
 }
 
 
+export class NotesTable {
+
+   private constructor() {}
+
+   static readonly column_id = "note_id";
+   static readonly column_createdBy = "createdBy";
+   static readonly column_title= "title";
+   static readonly column_content= "content";
+   static readonly column_created_datestamp  = "created_at";
+   static readonly column_modified_datestamp  = "modified_at";
+
+
+   static readonly tableName = "notes_table";
+
+
+   static get createQuery() {
+      return `CREATE TABLE IF NOT EXISTS ${NotesTable.tableName} (`+
+          `${NotesTable.column_id} TEXT PRIMARY KEY, `+
+          `${NotesTable.column_title} TEXT, `+
+          `${NotesTable.column_content} TEXT, `+
+          `${NotesTable.column_created_datestamp} TEXT, `+
+          `${NotesTable.column_modified_datestamp} TEXT, `+
+          `${NotesTable.column_createdBy} TEXT, `+
+          `FOREIGN KEY (${NotesTable.column_createdBy}) `+
+          `REFERENCES ${UserTable.tableName} (${UserTable.column_email}))`;
+   }
+
+}
+
+
 

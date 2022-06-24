@@ -12,8 +12,9 @@ export class Auth_app implements App{
     }
 
     createServer(port: number) {
-       this.expressApp.listen(port || process.env.PORT, function (){
-           console.log(`Express Auth App is up and running on port ${port}`)
+       const PORT = process.env.PORT || port;
+       this.expressApp.listen(PORT, function (){
+           console.log(`Express Auth App is up and running on port ${PORT}`)
        })
     }
 

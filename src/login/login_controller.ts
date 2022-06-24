@@ -2,7 +2,7 @@ import * as express from 'express';
 import {LoginApiValidator} from "../validators/login.api.validator";
 import {Api_failure, Api_success} from "../models/api_models";
 import {getCryptoSigning, SigningType} from "../encryption/crypto.signing";
-import {Dao_provider} from '../db/dao_factory';
+import {Dao_provider} from '../db/dao_provider';
 import {DatabaseFactory, DatabaseType} from "../db/database";
 
 import {User, UserWithAuth} from "../models/user_models";
@@ -30,7 +30,7 @@ loginRouter.post('/', async function(req :any ,res: any){
             }
 
             const authToken = cyptoSigning.generateAuthToken({
-                "user": dbUser},"3f4779c8-a7b9-445c-94b4-631ffbe59c14");
+                "user": dbUser},process.env.CLIENT_SECRET);
             await userDao.createUserSession(new UserWithAuth(dbUser.email,dbUser.name,authToken))
 
            res.

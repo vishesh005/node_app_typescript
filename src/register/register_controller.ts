@@ -2,7 +2,7 @@ import * as express from 'express';
 import {LoginApiValidator} from "../validators/login.api.validator";
 import {Api_failure, Api_success} from "../models/api_models";
 import {getCryptoSigning, SigningType} from "../encryption/crypto.signing";
-import {Dao_provider} from '../db/dao_factory';
+import {Dao_provider} from '../db/dao_provider';
 import {DatabaseFactory, DatabaseType} from "../db/database";
 import {RegisterApiValidator} from "../validators/register.api.validator";
 import {Register_user, User} from "../models/user_models";

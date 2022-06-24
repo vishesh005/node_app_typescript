@@ -1,6 +1,6 @@
 import {Api_failure} from "../models/api_models";
 import {validateAuthToken, validateEmail} from "../validators/basic_validator";
-import {Dao_provider} from "../db/dao_factory";
+import {Dao_provider} from "../db/dao_provider";
 import {DatabaseFactory, DatabaseType} from "../db/database";
 import {getCryptoSigning, SigningType} from "../encryption/crypto.signing";
 
@@ -31,7 +31,7 @@ export const getMiddleWareFunction = async (req,res,next) =>{
         return;
        }
     const cyptoSigning = getCryptoSigning(SigningType.JWT);
-    if(!cyptoSigning.verifyAuthToken(token,user,"3f4779c8-a7b9-445c-94b4-631ffbe59c14")){
+    if(!cyptoSigning.verifyAuthToken(token,user,process.env.CLIENT_SECRET)){
            res.status(400).send(new Api_failure("Invalid Request",{
                validation: "Invalid User Authorization",
                message: "Requested user details are not authorized"},"Requested user details are not authorized"))

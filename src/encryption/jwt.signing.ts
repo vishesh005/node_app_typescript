@@ -2,13 +2,12 @@ import {CryptoSigning} from "./crypto.signing";
 import * as cryptoHash from 'bcryptjs';
 import * as jwtToken from  'jsonwebtoken';
 
-const expiryTime = '5m';
 
 export class JWTCryptoSigning implements  CryptoSigning {
 
     generateAuthToken(userPayload: object, clientSecret): string {
         try {
-            return jwtToken.sign(userPayload,clientSecret,{expiresIn: expiryTime});
+            return jwtToken.sign(userPayload,clientSecret,{expiresIn: process.env.TOKEN_EXPIRY_TIME});
         }catch (e){
             console.log("Error while signing auth token")
         }

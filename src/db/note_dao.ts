@@ -31,11 +31,13 @@ export class Note_dao_impl implements Note_dao {
     }
 
     async createNewNote(note: Note): Promise<any> {
+       await this.db.openDb();
         const response = await this.db.executeQuery(`INSERT INTO ${NotesTable.tableName} (` +
             `${NotesTable.column_id}, ${NotesTable.column_createdBy}, ${NotesTable.column_title},` +
             `${NotesTable.column_content}, ${NotesTable.column_created_datestamp}, ${NotesTable.column_modified_datestamp}) ` +
-            `VALUES (${note.note_id}, ${note.createdBy}, ${note.title}, ` +
-            `${note.content}, ${note.created_at}, ${note.modified_at})`);
+            `VALUES ("${note.note_id}", "${note.createdBy}", "${note.title}", ` +
+            `"${note.content}", "${note.created_at}", "${note.modified_at}")`);
+        await this.db.closeDb();
         return Note.fromResponse(response);
     }
 

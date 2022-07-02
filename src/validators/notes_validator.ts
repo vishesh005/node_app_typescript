@@ -31,4 +31,14 @@ export class Notes_validator {
            }
         }
     }
+
+
+    validateAllNotes(request: any){
+        if(request.skipRecords != undefined && !Array.isArray(request.skipRecords)){
+            return [{validation: INVALID_REQUEST, message: "Skipping records should be an array of ids"}];
+        }
+        if(request.recordsCount != undefined && (typeof request.recordsCount != "number")){
+            return [{validation: INVALID_REQUEST, message: "Requested records count should be number"}];
+        }
+    }
 }

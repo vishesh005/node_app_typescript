@@ -6,6 +6,7 @@ import {Notes_validator} from "../validators/notes_validator";
 import {Api_failure, Api_success} from "../models/api_models";
 import {Note} from "../models/note_model";
 import { v1 as uuidv1 } from 'uuid';
+import {validateAuthToken} from "../validators/basic_validator";
 
 const notesRouter = express.Router();
 
@@ -15,8 +16,8 @@ const  noteDao = new Dao_provider(DatabaseFactory
 
 const noteValidator = new Notes_validator();
 
-
-notesRouter.post("/createNote",[getMiddleWareFunction],async function (req,res) {
+notesRouter.use(getMiddleWareFunction)
+notesRouter.post("/createNote",[],async function (req,res) {
     try {
         const message = noteValidator.validateCreateNoteRequest(req.body);
         if (message != undefined) {
@@ -38,6 +39,27 @@ notesRouter.post("/createNote",[getMiddleWareFunction],async function (req,res) 
     }
 })
 
+
+notesRouter.get("/all",[],async function (req,res) {
+    try {
+        const message = noteValidator.validateAllNotes(req.body);
+        if (message != undefined) {
+            res.status(400).send(new Api_failure("Invalid Request", message, "Provided requests is not valid"))
+            return;
+        }
+        const skipRecords = req.body.skipRecords == undefined ? [] : req.body.skipRecords;
+        const recordsCount = req.body.recordsCount;
+        const userEmail = req.headers["email"]
+        const records = await noteDao.findNotesByEmail2(userEmail, skipRecords, recordsCount);
+        res.send(new Api_success("Records fetched successfully", {
+            records: records,
+            recordCount: records.length
+        }));
+    }catch (e) {
+        res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));
+        return;
+    }
+})
 
 
 export {notesRouter};

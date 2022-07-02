@@ -11,6 +11,8 @@ export interface Note_dao {
 
     createNewNote(note: Note): Promise<any>
 
+    findNotesByEmail2(email: string, skipIds: Array<string>, limit: number): Promise<Note[]>
+
     findNotesByEmail(email: string): Promise<Note[]>
 
     findNotesByCreatedDate(createdDate: Date): Promise<Note[]>
@@ -71,6 +73,15 @@ export class Note_dao_impl implements Note_dao {
 
     getAllNotes(): Promise<Note[]> {
         return Promise.resolve([]);
+    }
+
+    async findNotesByEmail2(email: string, skipIds: Array<string>, limit: number): Promise<Note[]> {
+        await this.db.openDb();
+        const idMap =new Map<string,string>();
+        idMap.set(NotesTable.column_id,`("${skipIds.join('","')}")`)
+        const records = await this.db.filterBy(NotesTable.tableName, ["not in"], idMap, [],{limit: limit});
+        await this.db.closeDb();
+        return records.map((record)=> Note.fromResponse(record));
     }
 
 

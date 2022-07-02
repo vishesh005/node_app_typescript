@@ -21,7 +21,7 @@ export abstract class RelationalDatabase {
 
     abstract getAll(table: string): Promise<any>
 
-    abstract filterBy(table: string, operators: string[], whereClause: Map<string, string>, separators: string[]): Promise<any>
+    abstract filterBy(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], {limit: number}): Promise<any>
 
     abstract closeDb(): Promise<any>
 }
@@ -105,13 +105,14 @@ class SqliteDatabase extends RelationalDatabase {
         return this.db.exec(dbQuery);
     }
 
-    async filterBy(table: string, operators: string[], whereClause: Map<string, string>, separators: string[]) : Promise<any> {
+    async filterBy(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], {limit}) : Promise<any> {
         let whereStatement: string = ""
-        const clauses = Object.keys(whereClause);
+        const clauses = Array.from(whereClause.keys());
         for (let i = 0; i < clauses.length; i++) {
-            whereStatement += `${clauses[i]} ${operators[i]} ${whereClause[clauses[i]]} ${(i <= separators.length - 1) ? separators[i] : ''}`
+            whereStatement += `${clauses[i]} ${operators[i]} ${whereClause.get(clauses[i])} ${(i <= separators.length - 1) ? separators[i] : ''}`
         }
-        return  this.db.exec(`SELECT * FROM ${table} WHERE ${whereStatement}`);
+
+        return  this.db.all(`SELECT * FROM ${table} WHERE ${whereStatement} ${typeof limit == "number" && limit > 0 ? `LIMIT ${limit}`: ''}`);
     }
 
     async getAll(table: string) : Promise<any> {

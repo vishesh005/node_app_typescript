@@ -7,7 +7,7 @@ export interface Note_dao {
 
     getAllNotes(): Promise<Note[]>
 
-    findNoteById(id: string): Promise<Note>
+    findNoteById(id: string, email:string): Promise<Note>
 
     createNewNote(note: Note): Promise<any>
 
@@ -25,6 +25,7 @@ export interface Note_dao {
 
     deleteNoteById(id: string)
 
+    getCountByEmail(email:string,skipRecords : Array<string>): Promise<number>
 }
 
 export class Note_dao_impl implements Note_dao {
@@ -47,8 +48,14 @@ export class Note_dao_impl implements Note_dao {
 
     }
 
-    findNoteById(id: string): Promise<Note> {
-        return Promise.resolve(undefined);
+    async findNoteById(id: string,email:string): Promise<Note> {
+        await this.db.openDb();
+        let map = new Map<string,string>();
+        map.set(NotesTable.column_id, `"${id}"`);
+        map.set(NotesTable.column_createdBy,`"${email}"`);
+        const response = await this.db.filterBy(NotesTable.tableName,["=","="],map, ["AND"], {limit: 1});
+        await this.db.closeDb();
+        return Note.fromResponse(response[0]);
     }
 
     findNotesBetweenTwoCreatedDates(from_created_date: Date, to_created_date: Date): Promise<Note[]> {
@@ -78,10 +85,20 @@ export class Note_dao_impl implements Note_dao {
     async findNotesByEmail2(email: string, skipIds: Array<string>, limit: number): Promise<Note[]> {
         await this.db.openDb();
         const idMap =new Map<string,string>();
+        idMap.set(NotesTable.column_createdBy,`"${email}"`);
         idMap.set(NotesTable.column_id,`("${skipIds.join('","')}")`)
-        const records = await this.db.filterBy(NotesTable.tableName, ["not in"], idMap, [],{limit: limit});
+        const records = await this.db.filterBy(NotesTable.tableName, ["=","not in"], idMap, ["AND"],{limit: limit});
         await this.db.closeDb();
         return records.map((record)=> Note.fromResponse(record));
+    }
+
+    async getCountByEmail(email: string, skipRecords: Array<string>): Promise<number> {
+        await this.db.openDb();
+        const idMap =new Map<string,string>();
+        idMap.set(NotesTable.column_id,`("${skipRecords.join('","')}")`)
+        const count = await this.db.getCount(NotesTable.tableName,["=","not in"], idMap, ["AND"],"*");
+        await this.db.closeDb();
+        return count;
     }
 
 

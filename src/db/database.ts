@@ -15,6 +15,8 @@ export abstract class RelationalDatabase {
 
     abstract openDb();
 
+    abstract closeDb(): Promise<any>
+
     abstract executeQuery(dbQuery: string): Promise<any>
 
     abstract getRecord(table: string, whereColumn: string, whereValue: string): Promise<any>
@@ -23,10 +25,12 @@ export abstract class RelationalDatabase {
 
     abstract filterBy(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], {limit: number}): Promise<any>
 
-    abstract closeDb(): Promise<any>
+    abstract  getCount(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], countExpression: string): Promise<number>
+
 }
 
 class SqliteDatabase extends RelationalDatabase {
+
 
     private static _instance: SqliteDatabase;
 
@@ -109,7 +113,7 @@ class SqliteDatabase extends RelationalDatabase {
         let whereStatement: string = ""
         const clauses = Array.from(whereClause.keys());
         for (let i = 0; i < clauses.length; i++) {
-            whereStatement += `${clauses[i]} ${operators[i]} ${whereClause.get(clauses[i])} ${(i <= separators.length - 1) ? separators[i] : ''}`
+            whereStatement += `${clauses[i]} ${operators[i]} ${whereClause.get(clauses[i])} ${(i <= separators.length - 1) ? separators[i] : ''} `
         }
 
         return  this.db.all(`SELECT * FROM ${table} WHERE ${whereStatement} ${typeof limit == "number" && limit > 0 ? `LIMIT ${limit}`: ''}`);
@@ -123,6 +127,15 @@ class SqliteDatabase extends RelationalDatabase {
         return this.db.get(`SELECT * FROM ${table} WHERE ${whereColumn}="${whereValue}"`);
     }
 
+    getCount(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], countExpression: string): Promise<number> {
+        let whereStatement: string = "";
+        const clauses = Array.from(whereClause.keys());
+        for (let i = 0; i < clauses.length; i++) {
+            whereStatement += `${clauses[i]} ${operators[i]} ${whereClause.get(clauses[i])} ${(i <= separators.length - 1) ? separators[i] : ''}`
+        }
+
+        return  this.db.all(`COUNT(${countExpression}) FROM ${table} WHERE ${whereStatement}`);
+    }
 
 }
 

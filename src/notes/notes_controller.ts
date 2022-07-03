@@ -6,7 +6,6 @@ import {Notes_validator} from "../validators/notes_validator";
 import {Api_failure, Api_success} from "../models/api_models";
 import {Note} from "../models/note_model";
 import { v1 as uuidv1 } from 'uuid';
-import {validateAuthToken} from "../validators/basic_validator";
 
 const notesRouter = express.Router();
 
@@ -61,5 +60,25 @@ notesRouter.get("/all",[],async function (req,res) {
     }
 })
 
+notesRouter.get("/getById/:note_id", async function (req, res, next) {
+    try {
+        const noteId = req.params["note_id"];
+        const email = req.headers["email"];
+        const noteIdMessage = noteValidator.validateNoteId(noteId);
+        if (noteIdMessage != undefined) {
+            res.status(400).send(new Api_failure("Invalid Request", noteIdMessage, "Provided requests is not valid"))
+            return;
+        }
+        const note = await noteDao.findNoteById(noteId, email);
+        if (note == undefined) {
+            res.send(new Api_success("Unable to find record", {"data": "Note Id is not valid"}));
+            return;
+        }
+        res.send(new Api_success("Note has been successfully fetched", {"note": note}))
+    } catch (e) {
+        res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));
+        return;
+    }
+})
 
 export {notesRouter};

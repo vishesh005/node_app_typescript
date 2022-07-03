@@ -1,4 +1,5 @@
 import {Note} from "../models/note_model";
+import { validate as uuidValidate } from 'uuid';
 
 const INVALID_REQUEST = "Invalid request";
 
@@ -39,6 +40,12 @@ export class Notes_validator {
         }
         if(request.recordsCount != undefined && (typeof request.recordsCount != "number")){
             return [{validation: INVALID_REQUEST, message: "Requested records count should be number"}];
+        }
+    }
+
+    validateNoteId(noteId:string){
+        if(typeof noteId != "string" || !uuidValidate(noteId)){
+          return [{validation: INVALID_REQUEST, message: "Provided note id is not valid"}];
         }
     }
 }

@@ -106,7 +106,7 @@ class SqliteDatabase extends RelationalDatabase {
     }
 
     async executeQuery(dbQuery: string) : Promise<any>{
-        return this.db.exec(dbQuery);
+        return await this.db.run(dbQuery);
     }
 
     async filterBy(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], {limit}) : Promise<any> {

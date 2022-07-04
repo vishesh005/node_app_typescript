@@ -48,4 +48,24 @@ export class Notes_validator {
           return [{validation: INVALID_REQUEST, message: "Provided note id is not valid"}];
         }
     }
+
+    validateNoteIdsFromArray(array: any) : any  {
+        if(array == undefined || !Array.isArray(array) || array.length < 1){
+            return [{validation: INVALID_REQUEST, message: "Requested note ids are not valid"}];
+        }
+        const invalidIds = [];
+        const messages = [];
+        for(let i = 0;i < array.length ;i++){
+             const message = this.validateNoteId(array[i]);
+             if(message != undefined){
+                 messages.push(message);
+                 invalidIds.push(array[i]);
+             }
+        }
+
+        return {
+            ids: invalidIds,
+            messages: messages
+        };
+    }
 }

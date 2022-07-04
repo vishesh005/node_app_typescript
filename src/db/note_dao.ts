@@ -23,7 +23,7 @@ export interface Note_dao {
 
     findNotesBetweenTwoModifiedDates(from_modified_date: Date, to_modified_date: Date): Promise<Note[]>
 
-    deleteNoteById(id: string)
+    deleteNoteById(id: string, email:string)
 
     getCountByEmail(email:string,skipRecords : Array<string>): Promise<number>
 }
@@ -44,8 +44,11 @@ export class Note_dao_impl implements Note_dao {
         return Note.fromResponse(response);
     }
 
-    deleteNoteById(id: string) {
-
+    async deleteNoteById(id: string, email:string) {
+        await this.db.openDb();
+        const resultSet = await this.db.executeQuery(`DELETE FROM ${NotesTable.tableName} WHERE ${NotesTable.column_id} = "${id}" AND ${NotesTable.column_createdBy} = "${email}"`);
+        await this.db.closeDb();
+        return resultSet.changes;
     }
 
     async findNoteById(id: string,email:string): Promise<Note> {

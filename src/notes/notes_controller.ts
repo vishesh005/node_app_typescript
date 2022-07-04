@@ -60,8 +60,8 @@ notesRouter.get("/all",[],async function (req,res) {
     }
 })
 
-notesRouter.get("/getById/:note_id", async function (req, res, next) {
-    try {
+notesRouter.get("/getById/:note_id", async function (req, res) {
+    try{
         const noteId = req.params["note_id"];
         const email = req.headers["email"];
         const noteIdMessage = noteValidator.validateNoteId(noteId);
@@ -80,5 +80,33 @@ notesRouter.get("/getById/:note_id", async function (req, res, next) {
         return;
     }
 })
+
+
+notesRouter.delete("/deleteNote/:note_id", async function (req, res) {
+    try {
+        const noteId = req.params["note_id"];
+        const email = req.headers["email"];
+        const noteIdMessage = noteValidator.validateNoteId(noteId);
+        if (noteIdMessage != undefined) {
+            res.status(400).send(new Api_failure("Invalid Request", noteIdMessage, "Provided requests is not valid"))
+            return;
+        }
+        const rowAffected = await noteDao.deleteNoteById(noteId, email);
+        if (rowAffected == undefined || rowAffected < 1) {
+            res.send(new Api_success("Requested note is not exists", {"data": "Note Id is not valid"}));
+            return;
+        }
+        res.send(new Api_success("Note has been successfully deleted", {
+            "note_id": noteId,
+            "user": email,
+            "record_status": "DELETED"
+         }))
+    } catch (e) {
+        res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));
+        return;
+    }
+})
+
+
 
 export {notesRouter};

@@ -25,13 +25,19 @@ export interface Note_dao {
 
     deleteNoteById(id: string, email:string)
 
+    deleteNoteByIds(ids: Array<string>, email:string): Promise<any>
+
     getCountByEmail(email:string,skipRecords : Array<string>): Promise<number>
+
+    updateNote(note: Note) : Promise<any>;
 }
 
 export class Note_dao_impl implements Note_dao {
 
     constructor(private readonly db: RelationalDatabase) {
     }
+
+
 
     async createNewNote(note: Note): Promise<any> {
        await this.db.openDb();
@@ -104,5 +110,37 @@ export class Note_dao_impl implements Note_dao {
         return count;
     }
 
+   async deleteNoteByIds(ids: Array<string>, email: string) {
+        await this.db.openDb();
+        const idsString = `"${ids.join('","')}"`
+        const records = await this.db.executeQuery(`DELETE FROM ${NotesTable.tableName} WHERE ${NotesTable.column_id} in (${idsString}) AND ${NotesTable.column_createdBy} = "${email}"`);
+        await this.db.closeDb();
+        return records.changes;
+    }
+
+   async updateNote(note: Note) : Promise<any> {
+        await this.db.openDb();
+        let setQuery = "";
+        const data = {};
+        if(note.title != undefined){
+           data[NotesTable.column_title] = note.title
+        }
+        if(note.content != undefined){
+            data[NotesTable.column_content] = note.content
+        }
+        const keys = Object.keys(data);
+        for (let i = 0; i< keys.length ;i++){
+            setQuery+= `${keys[i]} = "${data[keys[i]]}", `;
+        }
+        const response = await this.db.executeQuery(`UPDATE ${NotesTable.tableName} SET ` +
+            `${setQuery}`+
+            `${NotesTable.column_modified_datestamp} = "${note.modified_at}" `+
+            `WHERE ${NotesTable.column_id} = "${note.note_id}" AND `+
+            `${NotesTable.column_createdBy} = "${note.createdBy}"`);
+        await this.db.closeDb();
+        return response.changes;
+    }
+
 
 }
+

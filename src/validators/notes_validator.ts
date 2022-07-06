@@ -56,9 +56,9 @@ export class Notes_validator {
         const invalidIds = [];
         const messages = [];
         for(let i = 0;i < array.length ;i++){
-             const message = this.validateNoteId(array[i]);
+             let message = this.validateNoteId(array[i]);
              if(message != undefined){
-                 messages.push(message);
+                 messages.push({errorValidation: message, id: array[i]});
                  invalidIds.push(array[i]);
              }
         }

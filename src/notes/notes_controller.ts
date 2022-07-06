@@ -16,6 +16,7 @@ const  noteDao = new Dao_provider(DatabaseFactory
 const noteValidator = new Notes_validator();
 
 notesRouter.use(getMiddleWareFunction)
+
 notesRouter.post("/createNote",[],async function (req,res) {
     try {
         const message = noteValidator.validateCreateNoteRequest(req.body);
@@ -107,6 +108,98 @@ notesRouter.delete("/deleteNote/:note_id", async function (req, res) {
     }
 })
 
+
+notesRouter.delete("/deleteNotes", async function (req, res) {
+    try {
+        const ids = req.body.note_ids;
+        const email = req.headers["email"];
+        const noteIdMessage = noteValidator.validateNoteIdsFromArray(ids);
+        if (Array.isArray(noteIdMessage)) {
+            res.status(400).send(new Api_failure("Invalid Request", noteIdMessage, "Provided requests is not valid"))
+            return;
+        }
+        const invalidIds = noteIdMessage.ids;
+        const validIds = ids.filter((element) => !invalidIds.includes(element));
+        const rowsAffected = await noteDao.deleteNoteByIds(validIds, email);
+        res.send(new Api_success("Note has been successfully deleted", {
+            "note_ids": validIds,
+            "message": noteIdMessage,
+            "recordDeleted" : rowsAffected,
+            "user": email,
+            "record_status": "DELETED"
+        }))
+    } catch (e) {
+        res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));
+        return;
+    }
+})
+
+notesRouter.patch("/updateNote/:note_id", async function (req, res) {
+    try {
+        const note_id = req.params["note_id"];
+        const email = req.headers["email"];
+        const noteIdMessage = noteValidator.validateNoteId(note_id);
+        if (noteIdMessage != undefined) {
+            res.status(400).send(new Api_failure("Invalid Request", noteIdMessage, "Provided requests is not valid"))
+            return;
+        }
+        const note = Note.fromResponse(req.body)
+            .copyWith({
+                note_id: note_id,
+                createdBy: email,
+                modified_at: new Date().toUTCString()
+              })
+        const rowsAffected = await noteDao.updateNote(note);
+        if(rowsAffected > 0) {
+            res.send(new Api_success("Note has been successfully deleted", {
+                "note": note,
+                "message": `${note_id} has been successfully updated`,
+            }))
+        }else {
+            res.send(new Api_success("Invalid Record", {
+                "note": note,
+                "message": `${note_id} is not valid`,
+            }))
+        }
+    } catch (e) {
+        res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));
+        return;
+    }
+})
+
+
+notesRouter.patch("/updateNote/:note_id", async function (req, res) {
+    try {
+        const note_id = req.params["note_id"];
+        const email = req.headers["email"];
+        const noteIdMessage = noteValidator.validateNoteId(note_id);
+        if (noteIdMessage != undefined) {
+            res.status(400).send(new Api_failure("Invalid Request", noteIdMessage, "Provided requests is not valid"))
+            return;
+        }
+        const note = Note.fromResponse(req.body)
+            .copyWith({
+                note_id: note_id,
+                createdBy: email,
+                modified_at: new Date().toUTCString()
+            })
+        const rowsAffected = await noteDao.updateNote(note);
+        if(rowsAffected > 0) {
+            res.send(new Api_success("Note has been successfully deleted", {
+                "note": note,
+                "message": `${note_id} has been successfully updated`,
+            }))
+        }else {
+            res.send(new Api_success("Invalid Record", {
+                "note": note,
+                "message": `${note_id} is not valid`,
+            }))
+        }
+    } catch (e) {
+        res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));
+        return;
+    }
+})
 
 
 export {notesRouter};

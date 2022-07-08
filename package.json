@@ -25,6 +25,8 @@
     "dotenv": "^16.0.1",
     "email-validator": "^2.0.4",
     "express": "^4.18.1",
+    "mime-types": "^2.1.35",
+    "multer": "^1.4.5-lts.1",
     "password-validator": "^5.3.0",
     "sqlite": "^4.1.1",
     "sqlite3": "^5.0.8"

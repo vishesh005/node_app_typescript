@@ -74,3 +74,30 @@ export class NotesTable {
 
 
 
+export class  DocumentTable {
+
+   static readonly column_document_id = "document_id";
+   static readonly column_mime = "mime_type";
+   static readonly column_name = "file_name";
+   static readonly column_sizeInKb = "file_size";
+   static readonly column_createdDate = "created_date";
+   static  readonly column_status = "file_status";
+   static  readonly column_by_user = "uploaded_by";
+
+   static readonly tableName = "document_table";
+
+
+   static get createQuery() {
+      return `CREATE TABLE IF NOT EXISTS ${DocumentTable.tableName} `+
+              `( ${DocumentTable.column_document_id} TEXT PRIMARY KEY, `+
+              `${DocumentTable.column_name} TEXT, `+
+              `${DocumentTable.column_mime} TEXT, `+
+              `${DocumentTable.column_sizeInKb} TEXT, `+
+              `${DocumentTable.column_createdDate} TEXT, `+
+              `${DocumentTable.column_status} TEXT`+
+              `${DocumentTable.column_by_user} TEXT )`;
+   }
+}
+
+
+

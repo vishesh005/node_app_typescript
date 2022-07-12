@@ -68,4 +68,42 @@ export class Notes_validator {
             messages: messages
         };
     }
+
+    validateNotesFromArray(array: any) : any  {
+        if(array == undefined || !Array.isArray(array) || array.length < 1){
+            return [{validation: INVALID_REQUEST, message: "Patch requested notes are not valid"}];
+        }
+        const invalidNotes = [];
+        const messages = [];
+        for(let i = 0;i < array.length ;i++){
+            let message = this.validatePatchNoteRequest(array[i])
+            if(message != undefined){
+                messages.push({errorValidation: message, id: array[i]});
+                invalidNotes.push(array[i]);
+            }
+        }
+
+        return {
+            invalidNotes: invalidNotes,
+            messages: messages
+        };
+    }
+
+    validatePatchNoteRequest(note: any) : any{
+        if(note == undefined){
+            return [{validation: INVALID_REQUEST, message: "Provided patch note is not valid"}];
+        }
+        else if(note.title == undefined && note.content == undefined){
+            return [{validation: INVALID_REQUEST, message: `Patch note doesn't contain title or content`}];
+        }
+        else if(note.title == undefined && note.content == undefined){
+            return [{validation: INVALID_REQUEST, message: `Patch note doesn't contain title or content`}];
+        }
+        else if(this.validateNoteId(note.note_id) != undefined){
+            return [{validation: INVALID_REQUEST, message: `Patch note doesn't contain valid id`}];
+        }
+        else{
+            return undefined;
+        }
+    }
 }

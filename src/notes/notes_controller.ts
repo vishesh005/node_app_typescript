@@ -168,33 +168,26 @@ notesRouter.patch("/updateNote/:note_id", async function (req, res) {
 })
 
 
-notesRouter.patch("/updateNote/:note_id", async function (req, res) {
+notesRouter.patch("/updateNotes",async function (req, res) {
     try {
-        const note_id = req.params["note_id"];
+        const patchNotes = req.body.notes;
         const email = req.headers["email"];
-        const noteIdMessage = noteValidator.validateNoteId(note_id);
-        if (noteIdMessage != undefined) {
-            res.status(400).send(new Api_failure("Invalid Request", noteIdMessage, "Provided requests is not valid"))
+        const invalidNoteMessage = noteValidator.validateNotesFromArray(patchNotes);
+        if (invalidNoteMessage != undefined) {
+            res.status(400).send(new Api_failure("Invalid Request", invalidNoteMessage, "Provided requests is not valid"))
             return;
         }
-        const note = Note.fromResponse(req.body)
-            .copyWith({
-                note_id: note_id,
-                createdBy: email,
-                modified_at: new Date().toUTCString()
-            })
-        const rowsAffected = await noteDao.updateNote(note);
-        if(rowsAffected > 0) {
-            res.send(new Api_success("Note has been successfully deleted", {
-                "note": note,
-                "message": `${note_id} has been successfully updated`,
-            }))
-        }else {
-            res.send(new Api_success("Invalid Record", {
-                "note": note,
-                "message": `${note_id} is not valid`,
-            }))
-        }
+        const invalidNotes = invalidNoteMessage.invalidNotes;
+        const validNotes = patchNotes.filter((element) => !invalidNotes.includes(element));
+        const notesArray = patchNotes.map((noteObj)=> Note.fromResponse(noteObj));
+        const rowsAffected = await noteDao.updateNotes(notesArray,email);
+        res.send(new Api_success("Note patch has been successfully executed", {
+            "updatedNotes": validNotes,
+            "message": invalidNoteMessage,
+            "recordDeleted" : rowsAffected,
+            "user": email,
+            "record_status": "DELETED"
+        }))
     } catch (e) {
         res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));
         return;

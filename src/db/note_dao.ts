@@ -1,6 +1,7 @@
 import {Note} from "../models/note_model";
 import {RelationalDatabase} from "./database";
 import {NotesTable} from "./tables";
+import List = Mocha.reporters.List;
 
 
 export interface Note_dao {
@@ -30,12 +31,15 @@ export interface Note_dao {
     getCountByEmail(email:string,skipRecords : Array<string>): Promise<number>
 
     updateNote(note: Note) : Promise<any>;
+
+    updateNotes(note: Array<Note>, email:string) : Promise<any>;
 }
 
 export class Note_dao_impl implements Note_dao {
 
     constructor(private readonly db: RelationalDatabase) {
     }
+
 
 
 
@@ -140,6 +144,13 @@ export class Note_dao_impl implements Note_dao {
         await this.db.closeDb();
         return response.changes;
     }
+
+    async updateNotes(note: Note[], email: string): Promise<any> {
+        await this.db.openDb();
+        return  "";
+        await this.db.closeDb();
+    }
+
 
 
 }

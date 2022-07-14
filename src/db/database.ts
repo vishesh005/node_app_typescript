@@ -139,6 +139,48 @@ class SqliteDatabase extends RelationalDatabase {
 
 }
 
+export abstract class NoSqlDatabase {
+
+    protected constructor(protected dbUri) {
+    }
+
+    abstract init(): any;
+
+    abstract openDb();
+
+    abstract closeDb(): Promise<any>
+
+}
+
+export  class MongoDatabase extends  NoSqlDatabase {
+
+    private static _instance: MongoDatabase;
+
+    public static getInstance(dbUri: string) {
+        if (MongoDatabase._instance == undefined) {
+            MongoDatabase._instance = new MongoDatabase(dbUri);
+        }
+        return MongoDatabase._instance;
+    }
+
+    private constructor(dbUri) {
+        super(dbUri);
+    }
+
+    init(): any {
+    }
+
+    closeDb(): Promise<any> {
+        return Promise.resolve(undefined);
+    }
+
+    openDb() {
+    }
+
+
+
+}
+
 export class DatabaseFactory {
 
     static getDatabaseInstance(dbType: DatabaseType): RelationalDatabase {
@@ -149,9 +191,22 @@ export class DatabaseFactory {
                 return SqliteDatabase.getInstance(dbUri);
         }
     }
+
+    static  getNoSqlDatabaseInstance(dbType: NoSqlDatabaseType): NoSqlDatabase {
+        switch (dbType){
+          case NoSqlDatabaseType.MONGO_DB:
+            return MongoDatabase.getInstance(dbUri);
+          default:
+            return MongoDatabase.getInstance(dbUri);
+        }
+    }
 }
 
 export enum DatabaseType {
     SQLITE
+}
+
+export enum NoSqlDatabaseType {
+    MONGO_DB
 }
 

@@ -145,7 +145,7 @@ export class Note_dao_impl implements Note_dao {
         return response.changes;
     }
 
-    async updateNotes(notes: Note[], email: string): Promise<any> {
+    async updateNotes(notes: Note[]): Promise<any> {
         await this.db.openDb();
         let titleCount = 0;
         let contentCount = 0;

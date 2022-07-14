@@ -177,7 +177,7 @@ notesRouter.patch("/updateNotes",async function (req, res) {
             res.status(400).send(new Api_failure("Invalid Request", invalidNoteMessage, "Provided requests is not valid"))
             return;
         }
-        const invalidNotes = invalidNoteMessage.invalidNotes;
+        const invalidNotes = invalidNoteMessage?.invalidNotes ?? [];
         const validNotes = patchNotes.filter((element) => !invalidNotes.includes(element));
         const notesArray = patchNotes.map((noteObj)=> Note.fromResponse(noteObj));
         const rowsAffected = await noteDao.updateNotes(notesArray,email);

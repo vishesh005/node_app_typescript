@@ -32,7 +32,7 @@ export interface Note_dao {
 
     updateNote(note: Note) : Promise<any>;
 
-    updateNotes(note: Array<Note>, email:string) : Promise<any>;
+    updateNotes(notes: Array<Note>, email:string) : Promise<any>;
 }
 
 export class Note_dao_impl implements Note_dao {
@@ -145,10 +145,40 @@ export class Note_dao_impl implements Note_dao {
         return response.changes;
     }
 
-    async updateNotes(note: Note[], email: string): Promise<any> {
+    async updateNotes(notes: Note[], email: string): Promise<any> {
         await this.db.openDb();
-        return  "";
+        let titleCount = 0;
+        let contentCount = 0;
+        let titleSet = `${NotesTable.column_title} = CASE ${NotesTable.column_id} `;
+        let contentSet = `${NotesTable.column_content} = CASE ${NotesTable.column_id} `;
+
+        for (let i = 0; i < notes.length; i++) {
+            if (notes[i].title != undefined) {
+                titleSet += `WHEN "${notes[i].note_id}" THEN "${notes[i].title}" `;
+                ++titleCount;
+            }
+            if (notes[i].content != undefined) {
+                contentSet += `WHEN "${notes[i].note_id}" THEN "${notes[i].content}" `;
+                ++contentCount;
+            }
+        }
+        if (titleCount > 0) {
+            titleSet += "END ";
+        } else {
+            titleSet = "";
+        }
+        if (contentCount > 0) {
+            contentSet += "END";
+        } else {
+            contentSet = "";
+        }
+
+        const whereIds = notes.map((note)=>  note.note_id).join(`","`);
+        const updateQuery = `UPDATE ${NotesTable.tableName} SET ${titleSet} ${titleSet === "" || contentSet === "" ? '' : ', '} ${contentSet} ` +
+            `WHERE ${NotesTable.column_id} IN ("${whereIds}")`;
+        const response = await this.db.executeQuery(updateQuery);
         await this.db.closeDb();
+        return response.changes;
     }
 
 

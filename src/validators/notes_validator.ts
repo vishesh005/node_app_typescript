@@ -83,10 +83,12 @@ export class Notes_validator {
             }
         }
 
-        return {
-            invalidNotes: invalidNotes,
-            messages: messages
-        };
+        if(invalidNotes.length > 0) {
+            return {
+                invalidNotes: invalidNotes,
+                messages: messages
+            };
+        }
     }
 
     validatePatchNoteRequest(note: any) : any{

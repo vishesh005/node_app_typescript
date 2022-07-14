@@ -186,7 +186,7 @@ notesRouter.patch("/updateNotes",async function (req, res) {
             "message": invalidNoteMessage,
             "recordDeleted" : rowsAffected,
             "user": email,
-            "record_status": "DELETED"
+            "record_status": "UPDATED"
         }))
     } catch (e) {
         res.status(500).send(new Api_failure("Something went wrong", {}, "Some error has occurred"));

@@ -82,6 +82,8 @@ export class  DocumentTable {
    static readonly column_sizeInKb = "file_size";
    static readonly column_createdDate = "created_date";
    static  readonly column_status = "file_status";
+   static readonly  column_foreign_table = "foreign_association_table";
+   static readonly column_foreign_id = "foreign_association_id";
    static  readonly column_by_user = "uploaded_by";
 
    static readonly tableName = "document_table";
@@ -95,6 +97,8 @@ export class  DocumentTable {
               `${DocumentTable.column_sizeInKb} TEXT, `+
               `${DocumentTable.column_createdDate} TEXT, `+
               `${DocumentTable.column_status} TEXT`+
+              `${DocumentTable.column_foreign_id} TEXT`+
+               `${DocumentTable.column_foreign_table} TEXT`+
               `${DocumentTable.column_by_user} TEXT )`;
    }
 }

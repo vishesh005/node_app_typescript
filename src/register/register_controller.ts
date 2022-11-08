@@ -10,9 +10,7 @@ import {error} from "password-validator/typings/constants";
 import password = error.password;
 
 
-const  userDao = new Dao_provider(DatabaseFactory
-    .getDatabaseInstance(DatabaseType.SQLITE))
-    .userDao;
+const  userDao = Dao_provider.getInstance().userDao;
 
 const registerRouter = express.Router();
 

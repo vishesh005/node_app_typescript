@@ -7,9 +7,7 @@ import {DatabaseFactory, DatabaseType} from "../db/database";
 
 import {User, UserWithAuth} from "../models/user_models";
 
-const  userDao = new Dao_provider(DatabaseFactory
-    .getDatabaseInstance(DatabaseType.SQLITE))
-    .userDao;
+const  userDao = Dao_provider.getInstance().userDao;
 
 const loginRouter = express.Router();
 

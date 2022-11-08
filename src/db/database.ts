@@ -6,9 +6,11 @@ import {DocumentTable, NotesTable, UserAuthTable, UserTable} from "./tables";
 
 const dbUri = "./notes_app.db";
 
-export abstract class RelationalDatabase {
+export abstract class AppDatabase {
 
-    protected constructor(protected dbUri) {
+    public readonly dbType: DatabaseType
+
+    protected constructor(protected dbUri, dbType: DatabaseType) {
     }
 
     abstract init(): any;
@@ -16,6 +18,13 @@ export abstract class RelationalDatabase {
     abstract openDb();
 
     abstract closeDb(): Promise<any>
+}
+
+export abstract class RelationalDatabase extends AppDatabase{
+
+    protected constructor(dbUri, dbType: DatabaseType) {
+        super(dbUri,dbType);
+    }
 
     abstract executeQuery(dbQuery: string): Promise<any>
 
@@ -42,7 +51,7 @@ class SqliteDatabase extends RelationalDatabase {
     }
 
     private constructor(dbUri) {
-        super(dbUri);
+        super(dbUri,DatabaseType.SQLITE);
     }
 
     private db: Database
@@ -140,16 +149,12 @@ class SqliteDatabase extends RelationalDatabase {
 
 }
 
-export abstract class NoSqlDatabase {
+export abstract class NoSqlDatabase extends AppDatabase {
 
-    protected constructor(protected dbUri) {
+    protected constructor(protected dbUri, dbType: DatabaseType) {
+        super(dbUri,dbType);
     }
 
-    abstract init(): any;
-
-    abstract openDb();
-
-    abstract closeDb(): Promise<any>
 
 }
 
@@ -165,7 +170,7 @@ export  class MongoDatabase extends  NoSqlDatabase {
     }
 
     private constructor(dbUri) {
-        super(dbUri);
+        super(dbUri,DatabaseType.MONGO_DB);
     }
 
     init(): any {
@@ -184,30 +189,23 @@ export  class MongoDatabase extends  NoSqlDatabase {
 
 export class DatabaseFactory {
 
-    static getDatabaseInstance(dbType: DatabaseType): RelationalDatabase {
+    static getDatabaseInstance(): AppDatabase {
+        let dbType =  process?.env?.DB_TYPE ?? "SQLITE";
         switch (dbType) {
             case DatabaseType.SQLITE:
                 return SqliteDatabase.getInstance(dbUri);
+            case DatabaseType.MONGO_DB:
+                return MongoDatabase.getInstance(dbUri);
             default:
                 return SqliteDatabase.getInstance(dbUri);
         }
     }
 
-    static  getNoSqlDatabaseInstance(dbType: NoSqlDatabaseType): NoSqlDatabase {
-        switch (dbType){
-          case NoSqlDatabaseType.MONGO_DB:
-            return MongoDatabase.getInstance(dbUri);
-          default:
-            return MongoDatabase.getInstance(dbUri);
-        }
-    }
 }
 
 export enum DatabaseType {
-    SQLITE
-}
-
-export enum NoSqlDatabaseType {
-    MONGO_DB
+    SQLITE = "SQLITE",
+    POSTGRES_SQL = "POSTGRES_SQL",
+    MONGO_DB = "MONGO_DB"
 }
 

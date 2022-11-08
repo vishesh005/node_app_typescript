@@ -8,7 +8,7 @@ dotenv.config()
 const expressApp = AppFactory.getApplication(AppType.EXPRESS_AUTH);
 
 const database = DatabaseFactory
-    .getDatabaseInstance(DatabaseType.SQLITE);
+    .getDatabaseInstance();
 database.init();
 
 

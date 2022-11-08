@@ -9,9 +9,7 @@ import { v1 as uuidv1 } from 'uuid';
 
 const notesRouter = express.Router();
 
-const  noteDao = new Dao_provider(DatabaseFactory
-    .getDatabaseInstance(DatabaseType.SQLITE))
-    .noteDao;
+const  noteDao = Dao_provider.getInstance().noteDao;
 
 const noteValidator = new Notes_validator();
 

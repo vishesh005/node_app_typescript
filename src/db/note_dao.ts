@@ -35,7 +35,7 @@ export interface Note_dao {
     updateNotes(notes: Array<Note>, email:string) : Promise<any>;
 }
 
-export class Note_dao_impl implements Note_dao {
+export class Note_dao_impl_sqlite implements Note_dao {
 
     constructor(private readonly db: RelationalDatabase) {
     }

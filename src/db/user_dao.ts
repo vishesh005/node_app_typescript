@@ -19,7 +19,7 @@ export interface User_dao {
 }
 
 
-export class User_dao_impl implements  User_dao {
+export class User_dao_impl_sqlite implements  User_dao {
 
     constructor(private readonly db: RelationalDatabase) {}
 

@@ -1,13 +1,10 @@
 import {Api_failure} from "../models/api_models";
 import {validateAuthToken, validateEmail} from "../validators/basic_validator";
 import {Dao_provider} from "../db/dao_provider";
-import {DatabaseFactory, DatabaseType} from "../db/database";
 import {getCryptoSigning, SigningType} from "../encryption/crypto.signing";
 
 
-const  userDao = new Dao_provider(DatabaseFactory
-    .getDatabaseInstance(DatabaseType.SQLITE))
-    .userDao;
+const  userDao = Dao_provider.getInstance().userDao;
 
 export const getMiddleWareFunction = async (req,res,next) =>{
        const authToken  = req.headers["auth-token"];

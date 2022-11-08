@@ -140,6 +140,48 @@ class SqliteDatabase extends RelationalDatabase {
 
 }
 
+/**
+ * Implementation of the PostgresSQL relational database
+ * Extends from abstract class RelationalDatabase
+ */
+class PostgresDatabase extends RelationalDatabase {
+
+     init(): any {
+
+     }
+
+    async openDb() {
+
+     }
+
+    async closeDb(): Promise<any> {
+        return Promise.resolve(undefined);
+    }
+
+    async executeQuery(dbQuery: string): Promise<any> {
+        return Promise.resolve(undefined);
+    }
+
+    async filterBy(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], {limit: number}: { limit: any }): Promise<any> {
+        return Promise.resolve(undefined);
+    }
+
+    async getAll(table: string): Promise<any> {
+        return Promise.resolve(undefined);
+    }
+
+    async getCount(table: string, operators: string[], whereClause: Map<string, string>, separators: string[], countExpression: string): Promise<number> {
+        return Promise.resolve(0);
+    }
+
+    async getRecord(table: string, whereColumn: string, whereValue: string): Promise<any> {
+        return Promise.resolve(undefined);
+    }
+
+
+
+}
+
 export abstract class NoSqlDatabase {
 
     protected constructor(protected dbUri) {
